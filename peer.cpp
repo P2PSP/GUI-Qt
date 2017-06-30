@@ -121,7 +121,7 @@ namespace p2psp
 
 
         ip::tcp::endpoint source_ep(source.addr, source.port);
-        system::error_code ec;
+        boost::system::error_code ec;
         source_socket_.connect(source_ep, ec);
 
         if (ec) {
@@ -146,7 +146,7 @@ namespace p2psp
 
     void peer::RequestHeader()
     {
-        source_socket_.send(asio::buffer(GET_message_));
+        source_socket_.send(boost::asio::buffer(GET_message_));
     }
 
     void peer::RelayHeader()

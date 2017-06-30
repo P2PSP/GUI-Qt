@@ -54,7 +54,6 @@
 #include "util/trace.h"
 
 using namespace std;
-using namespace boost;
 
 //struct Source {
 //  ip::address addr;

@@ -24,7 +24,7 @@ HEADERS    += \
     addchannels.h \
     rundialog.h \
     globalheader.h \
-    rundialogstor   age.h \
+    rundialogstorage.h \
     SimplePlayer.h \
     logger.h
 
