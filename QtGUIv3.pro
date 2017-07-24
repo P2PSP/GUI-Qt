@@ -13,8 +13,7 @@ SOURCES    += main.cpp \
     addchannels.cpp \
     rundialog.cpp \
     rundialogstorage.cpp \
-    SimplePlayer.cpp \
-    logger.cpp
+    SimplePlayer.cpp
 
 HEADERS    += \
     add_dialog.h \
@@ -25,8 +24,7 @@ HEADERS    += \
     rundialog.h \
     globalheader.h \
     rundialogstorage.h \
-    SimplePlayer.h \
-    logger.h
+    SimplePlayer.h
 
 FORMS      += \
     add_dialog.ui \
@@ -37,13 +35,13 @@ FORMS      += \
 # Edit below for custom library location
 LIBS        += -L/usr/include/boost -DBOOST_LOG_DYN_LINK -lboost_thread -lpthread -lboost_system -lboost_log_setup -lboost_log -lboost_date_time  -lboost_chrono -lboost_timer -lboost_filesystem -lboost_log_setup -lboost_program_options
 LIBS        += -L/usr/lib -lvlc
-LIBS       += -L/home/praneeth/P2PSP/core/src
-LIBS       += -L/home/praneeth/P2PSP/core/bin -lp2psp
+LIBS       += -L"$$PWD/../core/src"
+LIBS       += -L"$$PWD/../core/bin" -lp2psp
 
 INCLUDEPATH += /usr/include/boost
 INCLUDEPATH += /usr/include
-INCLUDEPATH +=/home/praneeth/P2PSP/core/src
-INCLUDEPATH +=/home/praneeth/P2PSP/core/bin
+INCLUDEPATH +=/"$$PWD/../core/src"
+INCLUDEPATH +=/"$$PWD/../core/bin"
 
 RESOURCES += \
     icons.qrc

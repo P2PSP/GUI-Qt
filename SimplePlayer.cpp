@@ -38,6 +38,7 @@ SimplePlayer::SimplePlayer(QWidget *parent)
     QObject::connect(rundialogobj,SIGNAL(runPeer(runDialogStorage)),this,SLOT(receivePeerParameters(runDialogStorage)));
     QObject::connect(this,SIGNAL(runPeer(runDialogStorage)),peerthreadobj,SLOT(Play(runDialogStorage)));
     QObject::connect(peerthreadobj,SIGNAL(stats(int,int,int)),this,SLOT(stats(int,int,int)));
+    QObject::connect(peerthreadobj,SIGNAL(logEvent(int,QString)),this,SLOT(eventLog(int,QString)));
     QObject::connect(channel1,SIGNAL(addChannelSignal(addChannels)),this,SLOT(addChannelSlot(addChannels)));
 
 }
@@ -82,9 +83,31 @@ void SimplePlayer::changeVolume(int newVolume)
     libvlc_audio_set_volume (_mp,newVolume);
 }
 
-void SimplePlayer::eventLog(QString message)
+void SimplePlayer::eventLog(int type,QString message)
 {
-    ui->log->append(message);
+    QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    QString messageLog;
+    switch (type) {
+    case LOG_INFO:
+        messageLog = QString("[" + timestamp + "] Info: " + message);
+        break;
+    case LOG_WARNING:
+        messageLog = QString("[" + timestamp + "] Warning: " + message);
+        break;
+    case LOG_ERROR:
+        messageLog = QString("[" + timestamp + "] Error: " + message);
+        break;
+    case LOG_DEBUG:
+        messageLog = QString("[" + timestamp + "] Debug: " + message);
+        break;
+    case LOG_TRACE:
+        messageLog = QString("[" + timestamp + "] Info: " + message);
+        break;
+    default:
+        messageLog = QString("[" + timestamp + "] Error: Something want wrong");
+        break;
+    }
+    ui->log->append(messageLog);
 }
 
 void SimplePlayer::runPeerClicked()
@@ -121,6 +144,7 @@ void SimplePlayer::play()
     /* Play */
     libvlc_media_player_play (_mp);
 
+    ui->pause->setChecked(true);
     _isPlaying=true;
 }
 

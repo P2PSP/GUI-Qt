@@ -143,7 +143,7 @@ namespace p2psp{
       PORT_TYPE port;
       }source;
     signals:
-
+        void logEvent(int type,QString message);
     public slots:
     };
 }

@@ -10,11 +10,8 @@
 #include <peer.h>
 #include <globalheader.h>
 #include <rundialogstorage.h>
-#include <logger.h>
 
 using namespace std;
-
-//class Logger;
 
 class PeerThread : public QThread
 {
@@ -26,7 +23,6 @@ private:
     QWaitCondition condition;
 
     p2psp::peer *peerobj;
-  //  Logger *logger;
     //SimplePlayer *simpleplayerobj;
     runDialogStorage runtimeParameters;
 
@@ -79,7 +75,7 @@ public:
 //    QString filename;
 signals:
     void stats(int download,int upload,int totalPeers);
-
+    void logEvent(int type,QString message);
 private slots:
     //Play the Stream
     void Play(runDialogStorage runParameters);

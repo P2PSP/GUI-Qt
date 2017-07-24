@@ -5,7 +5,7 @@
 $ sudo apt-get install qt5-default
 $ sudo apt-get install libvlc-dev
 $ sudo apt-get install cmake
-$ sudo apt-get install libboost-all-dev
+Install Boost version 1.63
 ```
 
 ## Cloning
@@ -49,7 +49,7 @@ vlc http://localhost:9999 &
 
 Now go to the P2PSP-GUI folder and run it
 
-In the Menu bar click on Add Channels and give a Name,Description,Thumbnail,Source address and Port.
+In the Menu bar click on Add Channels and give a Name,Description,Thumbnail,Splitter address and Port.
 Give Source address as 127.0.0.1 and Source Port as 8080(Which ever you mention while creating the splitter)
 
 Now go to Menu bar again and click on Run Peer and give a Player port and select the above created channel from the channel list.

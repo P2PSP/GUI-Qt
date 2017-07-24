@@ -3,6 +3,7 @@
 PeerThread::PeerThread(QObject *parent) : QThread(parent)
 {
     peerobj = new p2psp::peer();
+    QObject::connect(peerobj,SIGNAL(logEvent(int,QString)),this,SIGNAL(logEvent(int,QString)));
     //logger = new Logger();
     player_port = peerobj->GetDefaultPlayerPort();
     splitter_addr = p2psp::Peer_core::GetDefaultSplitterAddr().to_string();
@@ -61,42 +62,38 @@ void PeerThread::run()
 void PeerThread::usingHeaders()
 {
 #if defined __IMS__
-    //logger->log(LOG_INFO,"Using Peer_IMS");
+    emit logEvent(LOG_INFO,"Using Peer_IMS");
 #endif
 
 #if defined __DBS__ || defined __ACS__
 #if defined __monitor__
-    //emit eventLog("Using Monitor_DBS");
-    //std::cout << "Using Monitor_DBS" << std::endl;
+    emit logEvent(LOG_INFO,"Using Monitor_DBS");
 #else
-    //logger->log(LOG_INFO,"Using Peer_DBS");
-    //std::cout << "Using Peer_DBS" << std::endl;
+    emit logEvent(LOG_INFO,"Using Peer_DBS");
 #endif /* __monitor__ */
 #endif /* __DBS__ || __ACS__ */
 
 #if defined __LRS__
 #if defined __monitor__
-    emit eventLog("Using Monitor_LRS");
-    //std::cout << "Using Monitor_LRS" << std::endl;
+    emit logEvent(LOG_INFO,"Using Monitor_LRS");
 #else
-    emit eventLog("Using Peer_DBS");
-    //std::cout << "Using Peer_DBS" << std::endl;
+    emit logEvent(LOG_INFO,"Using Peer_DBS");
 #endif
 #endif /* __LRS__ */
 
 #if defined __NTS__
 #if defined __monitor__
-    std::cout << "Using Monitor_NTS" << std::endl;
+    emit logEvent(LOG_INFO,"Using Monitor_NTS");
 #else
-    std::cout << "Using Peer_NTS" << std::endl;
+    emit logEvent(LOG_INFO,"Using Peer_NTS");
 #endif /* __monitor__ */
 #endif /* __NTS__ */
 
 #if defined __EMS__
 #if defined __monitor__
-    std::cout << "Using Monitor_EMS" << std::endl;
+    emit logEvent(LOG_INFO,"Using Monitor_EMS");
 #else
-    std::cout << "Using Peer_EMS" << std::endl;
+    emit logEvent(LOG_INFO,"Using Monitor_EMS");
 #endif /* __monitor__ */
 #endif /* __EMS__ */
 }
@@ -164,12 +161,13 @@ void PeerThread::peerInitialization()
 {
     peerobj->Init();
     peerobj->ListenToTheTeam();
-
+    emit logEvent(LOG_TRACE,"Listening to the team");
 #ifndef __IMS__
     peerobj->ReceiveTheListOfPeers();
-//    TRACE("List of peers received");
-//    TRACE("Number of peers in the team (excluding me) = "
-//          << std::to_string(peerobj->GetNumberOfPeers()));
+
+    emit logEvent(LOG_TRACE,"List of peers received");
+    emit logEvent(LOG_TRACE,"Number of peers in the team (excluding me) = "+
+                QString::number(peerobj->GetNumberOfPeers()));
 #endif
 
     peerobj->SendReadyForReceivingChunks();

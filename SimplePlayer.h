@@ -32,7 +32,7 @@ public:
     void closeWindow();
 
 public slots:
-    void eventLog(QString message);
+    void eventLog(int type,QString message);
 
 private slots:
 //    void openLocal();
