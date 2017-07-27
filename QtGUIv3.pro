@@ -13,7 +13,8 @@ SOURCES    += main.cpp \
     addchannels.cpp \
     rundialog.cpp \
     rundialogstorage.cpp \
-    SimplePlayer.cpp
+    SimplePlayer.cpp \
+    sink.cpp
 
 HEADERS    += \
     add_dialog.h \
@@ -24,7 +25,8 @@ HEADERS    += \
     rundialog.h \
     globalheader.h \
     rundialogstorage.h \
-    SimplePlayer.h
+    SimplePlayer.h \
+    sink.h
 
 FORMS      += \
     add_dialog.ui \

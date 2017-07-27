@@ -3,7 +3,6 @@
 PeerThread::PeerThread(QObject *parent) : QThread(parent)
 {
     peerobj = new p2psp::peer();
-    QObject::connect(peerobj,SIGNAL(logEvent(int,QString)),this,SIGNAL(logEvent(int,QString)));
     //logger = new Logger();
     player_port = peerobj->GetDefaultPlayerPort();
     splitter_addr = p2psp::Peer_core::GetDefaultSplitterAddr().to_string();
@@ -62,40 +61,41 @@ void PeerThread::run()
 void PeerThread::usingHeaders()
 {
 #if defined __IMS__
-    emit logEvent(LOG_INFO,"Using Peer_IMS");
+    std::cout << "Using Peer_IMS" << std::endl;
 #endif
 
 #if defined __DBS__ || defined __ACS__
 #if defined __monitor__
-    emit logEvent(LOG_INFO,"Using Monitor_DBS");
+    std::cout << "Using Monitor_DBS" << std::endl;
 #else
-    emit logEvent(LOG_INFO,"Using Peer_DBS");
+    std::cout << "Using Peer_DBS" << std::endl;
 #endif /* __monitor__ */
 #endif /* __DBS__ || __ACS__ */
 
 #if defined __LRS__
 #if defined __monitor__
-    emit logEvent(LOG_INFO,"Using Monitor_LRS");
+    std::cout << "Using Monitor_LRS" << std::endl;
 #else
-    emit logEvent(LOG_INFO,"Using Peer_DBS");
+    std::cout << "Using Peer_DBS" << std::endl;
 #endif
 #endif /* __LRS__ */
 
 #if defined __NTS__
 #if defined __monitor__
-    emit logEvent(LOG_INFO,"Using Monitor_NTS");
+    std::cout << "Using Monitor_NTS" << std::endl;
 #else
-    emit logEvent(LOG_INFO,"Using Peer_NTS");
+    std::cout << "Using Peer_NTS" << std::endl;
 #endif /* __monitor__ */
 #endif /* __NTS__ */
 
 #if defined __EMS__
 #if defined __monitor__
-    emit logEvent(LOG_INFO,"Using Monitor_EMS");
+    std::cout << "Using Monitor_EMS" << std::endl;
 #else
-    emit logEvent(LOG_INFO,"Using Monitor_EMS");
+    std::cout << "Using Peer_EMS" << std::endl;
 #endif /* __monitor__ */
 #endif /* __EMS__ */
+
 }
 
 
@@ -106,44 +106,88 @@ void PeerThread::setParameters()
     if(runtimeParameters.getPlayerPort()!=0)
     {
         player_port=runtimeParameters.getPlayerPort();
+        TRACE("Player port = "
+        << player_port);
     }
     peerobj->SetPlayerPort(player_port);
     peerobj->WaitForThePlayer();
+    std::cout<< "Player connected"<< std::endl;
     if(runtimeParameters.getSplitterAddress()!="")
     {
         splitter_addr=runtimeParameters.getSplitterAddress();
         peerobj->SetSplitterAddr(ip::address::from_string(splitter_addr));
+        TRACE("Splitter address = "
+          << splitter_addr);
     }
     if(runtimeParameters.getSplitterPort()!=0)
     {
         splitter_port=runtimeParameters.getSplitterPort();
         peerobj->SetSplitterPort(splitter_port);
+        TRACE("Splitter port = "
+        << splitter_port);
     }
     peerobj->ConnectToTheSplitter();
+    TRACE("Connected to the splitter");
     peerobj->ReceiveSourceEndpoint();
+    TRACE("Source = ("
+      << peerobj->GetSourceAddr()
+      << ","
+      << std::to_string(peerobj->GetSourcePort())
+      << ")");
+
     peerobj->ConnectToTheSource();
+    TRACE("Connected to the source");
+
     peerobj->ReceiveChannel();
+    TRACE("channel = "
+      << peerobj->GetChannel());
+
     peerobj->ReceiveHeaderSize();
+    TRACE("Header size = "
+      << peerobj->GetHeaderSize());
+
     peerobj->RequestHeader();
+    TRACE("Header requested");
+
+    std::cout << "Relaying the header from the source to the player ... " << std::flush;
     peerobj->RelayHeader();
+    std::cout << "done" << std::endl;
+
     peerobj->ReceiveChunkSize();
+    TRACE("Chunk size = "
+      << peerobj->GetChunkSize());
+
     peerobj->ReceiveBufferSize();
+    TRACE("Buffer size = "
+       << peerobj->GetBufferSize());
+
 #ifdef __IMS__
     peerobj->ReceiveMcastGroup();
+    TRACE("Using IP multicast group = ("
+      << peerobj->GetMcastAddr().to_string()
+      << ","
+      << peerobj->GetMcastPort()
+      << ")");
 #else
     if(runtimeParameters.getMaxChunk()!=0)
     {
         max_chunk_debt=runtimeParameters.getMaxChunk();
         peerobj->SetMaxChunkDebt(max_chunk_debt);
+        TRACE("Maximum chunk debt = "
+          << peerobj->GetMaxChunkDebt());
     }
     if(runtimeParameters.getTeamPort()!=0)
     {
         team_port=runtimeParameters.getTeamPort();
         peerobj->SetTeamPort(team_port);
+        TRACE("team_port = "
+          << peerobj->GetTeamPort());
     }
     if(runtimeParameters.getLocalHost())
     {
         peerobj->SetUseLocalHost(true);
+        TRACE("use_localhost = "
+          << peerobj->GetUseLocalHost());
     }
 #endif
 #ifdef __NTS__
@@ -152,6 +196,9 @@ void PeerThread::setParameters()
     {
         sourcePortStep=runtimeParameters.getSourcePortStep();
         peerobj->SetPortStep(sourcePortStep);
+        TRACE("Source port step = "
+          << peerobj->GetPortStep());
+
     }
 #endif
 #endif
@@ -161,17 +208,21 @@ void PeerThread::peerInitialization()
 {
     peerobj->Init();
     peerobj->ListenToTheTeam();
-    emit logEvent(LOG_TRACE,"Listening to the team");
-#ifndef __IMS__
-    peerobj->ReceiveTheListOfPeers();
+    TRACE("Listening to the team");
 
-    emit logEvent(LOG_TRACE,"List of peers received");
-    emit logEvent(LOG_TRACE,"Number of peers in the team (excluding me) = "+
-                QString::number(peerobj->GetNumberOfPeers()));
+#ifndef __IMS__
+    TRACE("Receiving the list of peers ... ");
+    peerobj->ReceiveTheListOfPeers();
+     std::cout << "done" << std::endl;
+    TRACE("List of peers received");
+    TRACE("Number of peers in the team (excluding me) = "
+          << std::to_string(peerobj->GetNumberOfPeers()));
 #endif
 
     peerobj->SendReadyForReceivingChunks();
     peerobj->DisconnectFromTheSplitter();
+    TRACE("Recived the configuration from the splitter.");
+    TRACE("Closing the connection");
 }
 
 void PeerThread::calcBufferingTime()

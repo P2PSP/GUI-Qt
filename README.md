@@ -5,14 +5,14 @@
 $ sudo apt-get install qt5-default
 $ sudo apt-get install libvlc-dev
 $ sudo apt-get install cmake
-Install Boost version 1.63
+Install Boost library version 1.63 - If you already built core library/going to build core library, done worry about this step as it will install the boost library by itself.
 ```
 
 ## Cloning
 ```
-git clone git@github.com:P2PSP/core.git
-git clone git@github.com:P2PSP/console.git
-git clone git@github.com:P2PSP/Qt.git
+git clone https://github.com/P2PSP/core.git
+git clone https://github.com/P2PSP/console.git
+git clone https://github.com/P2PSP/Qt.git
 ```
 
 ## Building from Sources

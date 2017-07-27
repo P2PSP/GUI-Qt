@@ -3,11 +3,5 @@
 
 #define __DBS__
 #define __D__
-
-#define LOG_INFO 0
-#define LOG_WARNING 1
-#define LOG_ERROR 2
-#define LOG_DEBUG 3
-#define LOG_TRACE 4
-
+#define BOOST_LOG_DYN_LINK
 #endif // GLOBALHEADER_H

@@ -13,8 +13,9 @@
 #include <iostream>
 #include <vlc/vlc.h>
 #include "peerthread.h"
+#include "sink.h"
 #include "rundialogstorage.h"
-
+#include <util/trace.h>
 namespace Ui {
     class SimplePlayer;
 }
@@ -30,9 +31,6 @@ public:
     explicit SimplePlayer(QWidget *parent = 0);
     ~SimplePlayer();
     void closeWindow();
-
-public slots:
-    void eventLog(int type,QString message);
 
 private slots:
 //    void openLocal();
@@ -62,6 +60,7 @@ private slots:
 
     void on_stop_clicked();
 
+    void logit(QString text);
 signals:
 
     void sendChannels(vector<addChannels>);
@@ -87,9 +86,11 @@ private:
     runDialog *rundialogobj;
     PeerThread *peerthreadobj;
     vector<addChannels> channels;
-
+    Sink *si;
     //For playing the vlc stream
     void openUrl();
+    //Log Method
+    void logInit();
 };
 
 #endif // SIMPLEPLAYER_H_

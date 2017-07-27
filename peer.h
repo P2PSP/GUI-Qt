@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <chrono>
-#define BOOST_LOG_DYN_LINK
+
 //#include "common.h"
 #include "core/common.h"
 
@@ -143,7 +143,7 @@ namespace p2psp{
       PORT_TYPE port;
       }source;
     signals:
-        void logEvent(int type,QString message);
+
     public slots:
     };
 }
