@@ -5,7 +5,9 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QApplication>
-
+#include <QMessageBox>
+#include <QJsonObject>
+#include <QJsonDocument>
 #include <add_dialog.h>
 #include <addchannels.h>
 #include <rundialog.h>
@@ -61,6 +63,10 @@ private slots:
     void on_stop_clicked();
 
     void logit(QString text);
+
+    void exportChannels();
+
+    void importChannels();
 signals:
 
     void sendChannels(vector<addChannels>);
@@ -78,6 +84,8 @@ private:
     void pause();
     void resume();
 
+    void read(const QJsonObject &json);
+    void write(QJsonObject &json) const;
 //    QString downloadSpeed;
 //    QString uploadSpeed;
 //    QString peerSize;
