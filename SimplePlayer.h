@@ -5,7 +5,9 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QApplication>
-
+#include <QMessageBox>
+#include <QJsonObject>
+#include <QJsonDocument>
 #include <add_dialog.h>
 #include <addchannels.h>
 #include <rundialog.h>
@@ -13,8 +15,9 @@
 #include <iostream>
 #include <vlc/vlc.h>
 #include "peerthread.h"
+#include "sink.h"
 #include "rundialogstorage.h"
-
+#include <util/trace.h>
 namespace Ui {
     class SimplePlayer;
 }
@@ -30,9 +33,6 @@ public:
     explicit SimplePlayer(QWidget *parent = 0);
     ~SimplePlayer();
     void closeWindow();
-
-public slots:
-    void eventLog(QString message);
 
 private slots:
 //    void openLocal();
@@ -62,6 +62,11 @@ private slots:
 
     void on_stop_clicked();
 
+    void logit(QString text);
+
+    void exportChannels();
+
+    void importChannels();
 signals:
 
     void sendChannels(vector<addChannels>);
@@ -79,6 +84,8 @@ private:
     void pause();
     void resume();
 
+    void read(const QJsonObject &json);
+    void write(QJsonObject &json) const;
 //    QString downloadSpeed;
 //    QString uploadSpeed;
 //    QString peerSize;
@@ -87,9 +94,11 @@ private:
     runDialog *rundialogobj;
     PeerThread *peerthreadobj;
     vector<addChannels> channels;
-
+    Sink *si;
     //For playing the vlc stream
     void openUrl();
+    //Log Method
+    void logInit();
 };
 
 #endif // SIMPLEPLAYER_H_

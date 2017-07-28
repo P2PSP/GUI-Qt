@@ -13,6 +13,11 @@ SimplePlayer::SimplePlayer(QWidget *parent)
 
     _isPlaying=false;
 
+    //Sink Method Initialization
+    si=new Sink();
+    QObject::connect(si,SIGNAL(logthis(QString)),this,SLOT(logit(QString)));
+    //log Initialization
+    logInit();
     //create a new libvlc instance
     _vlcinstance=libvlc_new(0, NULL);
 
@@ -39,7 +44,8 @@ SimplePlayer::SimplePlayer(QWidget *parent)
     QObject::connect(this,SIGNAL(runPeer(runDialogStorage)),peerthreadobj,SLOT(Play(runDialogStorage)));
     QObject::connect(peerthreadobj,SIGNAL(stats(int,int,int)),this,SLOT(stats(int,int,int)));
     QObject::connect(channel1,SIGNAL(addChannelSignal(addChannels)),this,SLOT(addChannelSlot(addChannels)));
-
+    QObject::connect(ui->actionExport_Channels,SIGNAL(triggered()),this,SLOT(exportChannels()));
+    QObject::connect(ui->actionImport_Channels,SIGNAL(triggered()),this,SLOT(importChannels()));
 }
 SimplePlayer::~SimplePlayer()
 {
@@ -55,6 +61,14 @@ SimplePlayer::~SimplePlayer()
     }
 
     delete ui;
+}
+
+void SimplePlayer::logInit()
+{
+    typedef sinks::synchronous_sink<Sink> sink_t;
+    boost::shared_ptr<sink_t> sink (new sink_t());
+    boost::shared_ptr<boost::log::core> logc = boost::log::core::get();
+    logc->add_sink (sink);
 }
 
 void SimplePlayer::stats(int download, int upload, int peerSize)
@@ -82,10 +96,10 @@ void SimplePlayer::changeVolume(int newVolume)
     libvlc_audio_set_volume (_mp,newVolume);
 }
 
-void SimplePlayer::eventLog(QString message)
-{
-    ui->log->append(message);
-}
+//void SimplePlayer::eventLog(QString message)
+//{
+//    ui->log->append(message);
+//}
 
 void SimplePlayer::runPeerClicked()
 {
@@ -121,6 +135,8 @@ void SimplePlayer::play()
     /* Play */
     libvlc_media_player_play (_mp);
 
+    ui->pause->setChecked(true);
+
     _isPlaying=true;
 }
 
@@ -146,6 +162,75 @@ void SimplePlayer::resume()
         libvlc_media_player_set_pause(_mp, false);
         _isPlaying=true;
     }
+}
+
+void SimplePlayer::exportChannels()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,
+        tr("Save Channels"), "",
+        tr("JSON Files (*.json);;All Files (*)"));
+
+    QFile file(fileName);
+    if (fileName.isEmpty())
+        return;
+    else {
+        if (!file.open(QIODevice::WriteOnly)) {
+            QMessageBox::information(this, tr("Unable to open file"),
+                file.errorString());
+            return;
+        }
+    }
+    QJsonObject gameObject;
+    write(gameObject);
+    QJsonDocument saveDoc(gameObject);
+    file.write(saveDoc.toJson());
+    QMessageBox::information(this, tr("Export Channels"),
+        "Successfully Exported");
+}
+void SimplePlayer::importChannels()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+        tr("Open Json File"), "",
+        tr("JSON Files (*.json);;All Files (*)"));
+
+    QFile file(fileName);
+
+    if (fileName.isEmpty())
+        return;
+    else {
+        if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::information(this, tr("Unable to open file"),
+                file.errorString());
+            return;
+        }
+    }
+    QByteArray saveData = file.readAll();
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+    read(loadDoc.object());
+    QMessageBox::information(this, tr("Import Channels"),
+        "Successfully Imported");
+}
+
+void SimplePlayer::read(const QJsonObject &json)
+{
+    QJsonArray channelArray = json["Channels"].toArray();
+    for (int channelIndex = 0; channelIndex < channelArray.size(); ++channelIndex) {
+        QJsonObject channelObject = channelArray[channelIndex].toObject();
+        addChannels channel1;
+        channel1.read(channelObject);
+        channels.push_back(channel1);
+    }
+}
+
+void SimplePlayer::write(QJsonObject &json) const
+{
+    QJsonArray channelArray;
+    foreach (const addChannels channel1, channels) {
+        QJsonObject channelObject;
+        channel1.write(channelObject);
+        channelArray.append(channelObject);
+    }
+    json["Channels"] = channelArray;
 }
 
 void SimplePlayer::receivePeerParameters(runDialogStorage runParameters)
@@ -271,4 +356,9 @@ void SimplePlayer::on_stop_clicked()
     libvlc_media_player_stop(_mp);
 
     _isPlaying=false;
+}
+
+void SimplePlayer::logit(QString text)
+{
+    ui->log->append(text);
 }

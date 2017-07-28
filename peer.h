@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <chrono>
-#define BOOST_LOG_DYN_LINK
+
 //#include "common.h"
 #include "core/common.h"
 

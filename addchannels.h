@@ -4,6 +4,9 @@
 #include <string>
 #include <iostream>
 #include <QPixmap>
+#include <QJsonObject>
+#include <QBuffer>
+#include <QJsonArray>
 
 using namespace std;
 
@@ -29,6 +32,9 @@ public:
 
     QPixmap getThumbnail() const;
     void setThumbnail(const QPixmap value);
+
+    void read(const QJsonObject &json);
+    void write(QJsonObject &json) const;
 private:
     string name;
     string description;

@@ -305,7 +305,15 @@
     <addaction name="actionHelp"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionExport_Channels"/>
+    <addaction name="actionImport_Channels"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -325,6 +333,16 @@
   <action name="actionHelp">
    <property name="text">
     <string>Help</string>
+   </property>
+  </action>
+  <action name="actionExport_Channels">
+   <property name="text">
+    <string>Export Channels</string>
+   </property>
+  </action>
+  <action name="actionImport_Channels">
+   <property name="text">
+    <string>Import Channels</string>
    </property>
   </action>
  </widget>

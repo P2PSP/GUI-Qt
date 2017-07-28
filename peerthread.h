@@ -10,7 +10,6 @@
 #include <peer.h>
 #include <globalheader.h>
 #include <rundialogstorage.h>
-#include <logger.h>
 
 using namespace std;
 
