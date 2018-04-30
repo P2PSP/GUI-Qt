@@ -10,9 +10,9 @@ $ sudo apt-get install libboost-all-dev
 
 ## Cloning
 ```
-git clone git@github.com:P2PSP/core.git
-git clone git@github.com:P2PSP/console.git
-git clone git@github.com:P2PSP/Qt.git
+git clone https://github.com/P2PSP/core.git
+git clone https://github.com/P2PSP/p2psp-console.git
+git clone https://github.com/P2PSP/Qt.git
 ```
 
 ## Building from Sources
